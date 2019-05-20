@@ -1,17 +1,6 @@
-# create a a main class which accepts the below:
-#
-# test filters
-# build number
-# number of simultaneous execution
-# additional tags to be passed to result
-# run configuration
-# project name
-
-# call thread-control (determine number of tests to be executed)
 import getopt
 import sys
 from engine.threadcontrol import ThreadControl
-
 
 
 def main(argv):
@@ -50,13 +39,6 @@ def main(argv):
             project = arg
         elif opt in ("-d", "--datanamespace"):
             datanamespace = arg
-    # print('filter is ', filter)
-    # print('buildnumber is ', buildnumber)
-    # print('threads is ', threads)
-    # print('additionaltags is ', additionaltags)
-    # print('runconfiguration is ', runconfiguration)
-    # print('project is ', project)
-    # print('datanamespace is ', datanamespace)
     arglist = [filter, buildnumber, threads, runconfiguration, project, datanamespace]
     if None in arglist:
         raise Exception('Correct the arguments, item missing!!!')

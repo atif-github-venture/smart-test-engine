@@ -3,12 +3,16 @@ import os
 import requests
 import urllib3
 
+from util.json import write_json
+
 
 class Api:
-    def __init__(self, servicename, f, p):
+
+    def __init__(self, servicename, f, p, save_to_file_path):
         self.servicename = servicename
         self.filter = f
         self.project = p
+        self.temppath = save_to_file_path
 
     def getcall_macro_tests(self):
         config = configparser.RawConfigParser()
@@ -22,6 +26,7 @@ class Api:
         if r.status_code == 200:
             data = r.json()
             print(data)
+            write_json(data, self.temppath)
 
     def getcall_run_conf(self):
         config = configparser.RawConfigParser()
@@ -35,6 +40,7 @@ class Api:
         if r.status_code == 200:
             data = r.json()
             print(data)
+            write_json(data, self.temppath)
         else:
             print(r.status_code)
 
@@ -45,11 +51,12 @@ class Api:
         urllib3.disable_warnings()
         uri = 'http://' + config.get('API', 'api.base-uri') + config.get('API', self.servicename)
         # PARAMS = {'name': self.filter}
-        PARAMS={}
+        PARAMS = {}
         headers = {"content-type": "application/json", "project": self.project}
         r = requests.get(url=uri, params=PARAMS, headers=headers, verify=False)
         if r.status_code == 200:
             data = r.json()
             print(data)
+            write_json(data, self.temppath)
         else:
             print(r.status_code)
