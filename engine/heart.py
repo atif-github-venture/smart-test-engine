@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from util.common import to_snake_case
+from util.webdriver import Driver
 
 
 class Heart:
@@ -32,6 +33,7 @@ class Heart:
             return False
 
     def open_browser(self):
+        self.driver = Driver.setUp()
         return True
 
     def navigate_to_url(self):
@@ -50,6 +52,7 @@ class Heart:
         return True
 
     def close_browser(self):
+        Driver.tearDown()
         return True
 
     # def wait_for_element(self, locator, timeout=20):
