@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -29,17 +30,34 @@ class Heart:
             func = getattr(self, self.action)
             return func()
         except (AttributeError):
-            self.errorbody = 'Invalid action, engine NOT configured!!!'
+            self.errorbody = self.action+ ' - Invalid action, engine NOT configured!!!'
             return False
 
     def open_browser(self):
-        self.driver = Driver.setUp()
+        d = Driver.get_driver()
+        d.setUp()
         return True
 
     def navigate_to_url(self):
+        path = (
+            os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
+                         'temp', 'data.json'))
+        from util.json import read_json_data
+        data = read_json_data(path)
+        url = None
+        for x in data:
+            url = x['key']
+            if url == 'url':
+                url = x['value']
+                break
+        driver = Driver.get_driver().driver_handle()
+        driver.get(url)
         return True
 
     def enter_text(self):
+        driver = Driver.get_driver().driver_handle()
+        ele = driver.find_element_by_xpath(self.identifier)
+        ele.click
         return True
 
     def click(self):
