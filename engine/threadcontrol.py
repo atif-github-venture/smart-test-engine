@@ -4,7 +4,7 @@ from util.api import Api
 
 
 def get_filtered_tests(f, p, path):
-    Api('api.macro-test.path', f, p, path).getcall_macro_tests()
+    Api('api.test.path', f, p, path).getcall_tests()
 
 
 def get_run_configuration(rc, p, path):

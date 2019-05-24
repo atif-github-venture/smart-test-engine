@@ -18,7 +18,13 @@ class Execute:
 
     def start_test(self):
         self.set_test_information()
-        self.start_macrotest()
+        rsteps = self.run_test()
+        mictest = {
+            'testname': self.test['testname'],
+            'Steps': rsteps
+        }
+        print('************************')
+        print(json.dumps(mictest))
 
     def set_test_information(self):
         g = GlobalInfo.get_instance()
@@ -27,31 +33,32 @@ class Execute:
         g.set_additionaltags(self.additionaltags)
         g.set_runconfiguration(self.runconfiguration)
         g.set_datanamespace(self.datanamespace)
-        g.set_testname(self.test['macrotestname'])
+        g.set_testname(self.test['testname'])
         g.set_testtags(self.test['tags'])
 
-    def start_macrotest(self):
-        microtestlist = self.test['MicroTest']
-        mactest = []
-        # list of micro test
-        for i in range(len(microtestlist)):
-            # Inside individual micro test
-            steps = microtestlist[i]['Steps']
-            # If a single step in a micro test fails, break the entire macro test
-            if self.status is False:
-                break
-            else:
-                rsteps = self.run_micro_test_steps(steps)
-                mictest = {
-                    'microtestname' : microtestlist[i]['microtestname'],
-                    'Steps': rsteps
-                }
-                mactest.append(mictest)
-        print('************************')
-        print(json.dumps(mactest))
+    # def start_macrotest(self):
+    #     microtestlist = self.test['MicroTest']
+    #     mactest = []
+    #     # list of micro test
+    #     for i in range(len(microtestlist)):
+    #         # Inside individual micro test
+    #         steps = microtestlist[i]['Steps']
+    #         # If a single step in a micro test fails, break the entire macro test
+    #         if self.status is False:
+    #             break
+    #         else:
+    #             rsteps = self.run_micro_test_steps(steps)
+    #             mictest = {
+    #                 'microtestname' : microtestlist[i]['microtestname'],
+    #                 'Steps': rsteps
+    #             }
+    #             mactest.append(mictest)
+    #     print('************************')
+    #     print(json.dumps(mactest))
 
-    def run_micro_test_steps(self, steps):
+    def run_test(self):
         step = []
+        steps = self.test['Steps']
         for i in range(len(steps)):
             stepstatus = Heart().execute_step(steps[i]['identifier'], steps[i]['action'], steps[i]['data'])
             rstep = {
