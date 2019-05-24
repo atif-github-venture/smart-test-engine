@@ -2,6 +2,7 @@ import json
 
 from engine.globalinfo import GlobalInfo
 from engine.heart import Heart
+from util.webdriver import Driver
 
 
 class Execute:
@@ -75,5 +76,6 @@ class Execute:
                 rstep['error'] = stepstatus[1]
                 step.append(rstep)
                 self.status = False
+                Heart.quit_driver(None)
                 break
         return step

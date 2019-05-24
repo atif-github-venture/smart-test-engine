@@ -82,7 +82,7 @@ class Heart:
             return False
 
     def close_browser(self):
-        Driver.tearDown()
+        self.quit_driver()
         return True
 
     def wait_for_element(self, timeout=20):
@@ -152,3 +152,6 @@ class Heart:
                 valuetoreturn = x['value']
                 break
         return valuetoreturn
+
+    def quit_driver(self):
+        Driver.get_driver().driver_handle().quit()

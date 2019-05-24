@@ -34,12 +34,6 @@ class Driver():
         except WebDriverException as e:
             print(str(e))
 
-    def tearDown(self):
-        if sys.exc_info()[0]:
-            self.driver.save_screenshot("./../screenshots.png")
-        if self.driver is not None:
-            self.driver.quit()
-
     def create_desired_capabilities(self):
         path = (
             os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
