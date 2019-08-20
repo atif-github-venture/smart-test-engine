@@ -1,8 +1,10 @@
 import json
-
+import os
 from engine.globalinfo import GlobalInfo
 from engine.heart import Heart
 from util.api import Api
+from util.saucelabs import SauceLabs
+
 
 class Execute:
 
@@ -24,6 +26,8 @@ class Execute:
             'status': self.status,
             'Steps': rsteps
         }
+        g = GlobalInfo.get_instance()
+        SauceLabs.update_test_info(g.get_sessionid(), g.get_buildnumber(), self.status)
         print('************************')
         print(json.dumps(mictest))
 
@@ -65,11 +69,12 @@ class Execute:
         steps = self.test['Steps']
         for i in range(len(steps)):
             identifier = self.get_repository_details(steps[i]['identifier'])
-            stepstatus = Heart().execute_step(identifier, steps[i]['action'], steps[i]['data'])
+            data = self.get_data(steps[i]['data']) if steps[i]['data'] != '' else None
+            stepstatus = Heart().execute_step(identifier, steps[i]['action'], data)
             rstep = {
                 'identifier': steps[i]['identifier'],
                 'action': steps[i]['action'],
-                'data': steps[i]['data'],
+                'data': data,
                 'status': stepstatus,
             }
             if stepstatus is True:
@@ -83,3 +88,18 @@ class Execute:
                 Heart.quit_driver(None)
                 break
         return step
+
+    def get_data(self, search):
+        path = (
+            os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
+                         'temp', 'data.json'))
+
+        from util.json import read_json_data
+        data = read_json_data(path)
+        valuetoreturn = None
+        for x in data:
+            valuetoreturn = x['key']
+            if valuetoreturn == search:
+                valuetoreturn = x['value']
+                break
+        return valuetoreturn

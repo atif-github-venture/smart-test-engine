@@ -1,4 +1,3 @@
-import os
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -25,7 +24,7 @@ class Heart:
     def execute_step(self, i, a, d):
         self.identifier = i
         self.action = to_snake_case(a)
-        self.data = self.get_data(d)
+        self.data = d
         status = self.execute()
         if status is False or status is AttributeError:
             return status, self.errorbody
@@ -147,20 +146,6 @@ class Heart:
         except NoSuchElementException as e:
             self.errorbody = 'NoSuchElementException' + str(e)
             return True
-
-    def get_data(self, search):
-        path = (
-            os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
-                         'temp', 'data.json'))
-        from util.json import read_json_data
-        data = read_json_data(path)
-        valuetoreturn = None
-        for x in data:
-            valuetoreturn = x['key']
-            if valuetoreturn == search:
-                valuetoreturn = x['value']
-                break
-        return valuetoreturn
 
     def quit_driver(self):
         Driver.get_driver().driver_handle().quit()

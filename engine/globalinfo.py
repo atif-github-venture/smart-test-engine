@@ -8,6 +8,7 @@ class GlobalInfo:
     datanamespace = None
     testname = None
     testtags = None
+    sessionid = None
 
     @staticmethod
     def get_instance():
@@ -65,3 +66,10 @@ class GlobalInfo:
 
     def get_testtags(self):
         return self.testtags
+
+    def set_sessionid(self, sid):
+            self.sessionid = sid
+
+    def get_sessionid(self):
+        return self.sessionid
+

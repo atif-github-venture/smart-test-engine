@@ -1,5 +1,10 @@
 import os
-
+import threading
+from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing import Pool, cpu_count
+from itertools import repeat
+from threading import Thread
+from engine.execute import Execute
 from util.api import Api
 
 
@@ -13,6 +18,7 @@ def get_run_configuration(rc, p, path):
 
 def get_data_namespace(d, p, path):
     Api('api.data-setup.path', d, p, path).getcall_data_namespace()
+
 
 def get_data_for_execution(self):
     path = (
@@ -30,6 +36,10 @@ def get_data_for_execution(self):
                      'temp', 'data.json'))
     get_data_namespace(self.datanamespace, self.project, path)
 
+def thread_initiate(t, f, b, a, r, p, d):
+    from engine.execute import Execute
+    Execute(t, f, b, a, r, p, d).start_test()
+
 
 def call_for_execution(f, b, a, r, p, d):
     path = (
@@ -38,10 +48,18 @@ def call_for_execution(f, b, a, r, p, d):
     from util.json import read_json_data
     test_to_execute = read_json_data(path)
     # json_object = json.loads(json_raw[0])
+
+    # threads = []
+    # for i, browser in enumerate(test_to_execute):
+    #     thread = Thread(target=thread_initiate, args=[test_to_execute[i], f, b, a, r, p, d])
+    #     threads.append(thread)
+    #     thread.start()
+    # for thread in threads:
+    #     thread.join()
+
     for i in range(len(read_json_data(path))):
-        from engine.execute import Execute
-        e = Execute(test_to_execute[i], f, b, a, r, p, d)
-        e.start_test()
+            from engine.execute import Execute
+            Execute(test_to_execute[i], f, b, a, r, p, d).start_test()
 
 
 class ThreadControl:
