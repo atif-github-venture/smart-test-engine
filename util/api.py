@@ -60,3 +60,17 @@ class Api:
             write_json(data, self.temppath)
         else:
             print(r.status_code)
+
+    def getcall_repository(self):
+        config = configparser.RawConfigParser()
+        config.read(os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
+                                 'resources', 'configfile.properties'))
+        urllib3.disable_warnings()
+        uri = 'http://' + config.get('API', 'api.base-uri') + config.get('API', self.servicename)
+        PARAMS = {'identifier': self.filter}
+        headers = {'content-type': 'application/json', 'project': self.project}
+        r = requests.get(url=uri, params=PARAMS, headers=headers, verify=False)
+        if r.status_code == 200:
+            return r.json()[0]['property']
+        else:
+            return None

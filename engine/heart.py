@@ -1,14 +1,23 @@
-import logging
 import os
-import sys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
 from util.common import to_snake_case
 from util.webdriver import Driver
 
+
+def set_identifier(driver, identifier):
+    prop_split = identifier.split('=')
+    locator = prop_split[0]
+    loc_property = "=".join(prop_split[1: len(prop_split)])
+    try:
+        if 'id' in locator:
+            return driver.find_element_by_id(loc_property)
+        elif 'xpath' in locator:
+            return driver.find_element_by_xpath(loc_property)
+    except (NoSuchElementException):
+        return False
 
 class Heart:
     errorbody = None
@@ -46,7 +55,7 @@ class Heart:
     def enter_text(self):
         try:
             driver = Driver.get_driver().driver_handle()
-            ele = driver.find_element_by_xpath(self.identifier)
+            ele = set_identifier(driver, self.identifier)
             ele.send_keys(self.data)
             return True
         except NoSuchElementException as e:
@@ -56,7 +65,7 @@ class Heart:
     def click(self):
         try:
             driver = Driver.get_driver().driver_handle()
-            ele = driver.find_element_by_xpath(self.identifier)
+            ele = set_identifier(driver, self.identifier)
             ele.click()
             return True
         except NoSuchElementException as e:
@@ -66,7 +75,7 @@ class Heart:
     def is_visible(self):
         try:
             driver = Driver.get_driver().driver_handle()
-            ele = driver.find_element_by_xpath(self.identifier)
+            ele = set_identifier(driver, self.identifier)
             return ele.is_displayed()
         except NoSuchElementException as e:
             self.errorbody = 'NoSuchElementException' + str(e)
@@ -75,8 +84,8 @@ class Heart:
     def is_not_visible(self):
         try:
             driver = Driver.get_driver().driver_handle()
-            ele = driver.find_element_by_xpath(self.identifier)
-            return not (ele.is_displayed())
+            ele = set_identifier(driver, self.identifier)
+            return not (ele)
         except NoSuchElementException as e:
             self.errorbody = 'NoSuchElementException' + str(e)
             return False

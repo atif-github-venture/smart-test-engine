@@ -2,8 +2,7 @@ import json
 
 from engine.globalinfo import GlobalInfo
 from engine.heart import Heart
-from util.webdriver import Driver
-
+from util.api import Api
 
 class Execute:
 
@@ -22,6 +21,7 @@ class Execute:
         rsteps = self.run_test()
         mictest = {
             'testname': self.test['testname'],
+            'status': self.status,
             'Steps': rsteps
         }
         print('************************')
@@ -57,11 +57,15 @@ class Execute:
     #     print('************************')
     #     print(json.dumps(mactest))
 
+    def get_repository_details(self, d):
+        return Api('api.repository.path', d, self.project, "").getcall_repository()
+
     def run_test(self):
         step = []
         steps = self.test['Steps']
         for i in range(len(steps)):
-            stepstatus = Heart().execute_step(steps[i]['identifier'], steps[i]['action'], steps[i]['data'])
+            identifier = self.get_repository_details(steps[i]['identifier'])
+            stepstatus = Heart().execute_step(identifier, steps[i]['action'], steps[i]['data'])
             rstep = {
                 'identifier': steps[i]['identifier'],
                 'action': steps[i]['action'],

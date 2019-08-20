@@ -30,7 +30,7 @@ class Driver():
                                 'resources')
             self.driver = webdriver.Chrome(executable_path=path + '/chromedriver', desired_capabilities=dc)
             self.driver.maximize_window()
-            self.driver.implicitly_wait(5)
+            self.driver.implicitly_wait(10)
         except WebDriverException as e:
             print(str(e))
 

@@ -14,7 +14,6 @@ def get_run_configuration(rc, p, path):
 def get_data_namespace(d, p, path):
     Api('api.data-setup.path', d, p, path).getcall_data_namespace()
 
-
 def get_data_for_execution(self):
     path = (
         os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
