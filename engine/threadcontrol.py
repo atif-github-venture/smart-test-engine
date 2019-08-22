@@ -1,6 +1,7 @@
 import os
 import threading
 import concurrent.futures
+import time
 from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing import Pool, cpu_count
 from itertools import repeat
@@ -37,14 +38,16 @@ def get_data_for_execution(self):
                      'temp', 'data.json'))
     get_data_namespace(self.datanamespace, self.project, path)
 
-def thread_initiate(t, f, b, a, r, p, d):
+def thread_initiate(t, f, b, a, r, p, d, ty):
     # lock.acquire()
     from engine.execute import Execute
-    Execute(t, f, b, a, r, p, d).start_test()
+    Execute(t, f, b, a, r, p, d, ty).start_test()
     # lock.release()
 
 
-def call_for_execution(f, b, a, r, p, d):
+def call_for_execution(f, b, a, r, p, d, ty):
+    from time import strftime, gmtime
+    st_time = gmtime()
     path = (
         os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
                      'temp', 'test.json'))
@@ -56,7 +59,7 @@ def call_for_execution(f, b, a, r, p, d):
     # threads = []
     # # lock = threading.Lock()
     # for i, browser in enumerate(test_to_execute):
-    #     thread = threading.Thread(target=thread_initiate, args=[ test_to_execute[i], f, b, a, r, p, d])
+    #     thread = threading.Thread(target=thread_initiate, args=[ test_to_execute[i], f, b, a, r, p, d, ty])
     #     threads.append(thread)
     #     thread.start()
     # for thread in threads:
@@ -64,7 +67,7 @@ def call_for_execution(f, b, a, r, p, d):
 
     #ThreadPoolExecutor
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(test_to_execute)) as executor:
-        future_to_url = {executor.submit(thread_initiate, t, f, b, a, r, p, d): t for t in test_to_execute}
+        future_to_url = {executor.submit(thread_initiate, t, f, b, a, r, p, d, ty): t for t in test_to_execute}
 
         for future in concurrent.futures.as_completed(future_to_url):
             t = future_to_url[future]
@@ -76,11 +79,13 @@ def call_for_execution(f, b, a, r, p, d):
     # single execution
     # for i in range(len(read_json_data(path))):
     #         from engine.execute import Execute
-    #         Execute(test_to_execute[i], f, b, a, r, p, d).start_test()
+    #         Execute(test_to_execute[i], f, b, a, r, p, d, ty).start_test()
+    en_time = gmtime()
+    print('total execution time: ' + str(time.mktime(en_time) - time.mktime(st_time)))
 
 
 class ThreadControl:
-    def __init__(self, filter, buildnumber, threads, additionaltags, runconfiguration, project, datanamespace):
+    def __init__(self, filter, buildnumber, threads, additionaltags, runconfiguration, project, datanamespace, type):
         self.filter = filter
         self.buildnumber = buildnumber
         self.threads = threads
@@ -88,11 +93,12 @@ class ThreadControl:
         self.runconfiguration = runconfiguration
         self.project = project
         self.datanamespace = datanamespace
+        self.type = type
 
     def execute(self):
         get_data_for_execution(self)
         call_for_execution(self.filter, self.buildnumber, self.additionaltags, self.runconfiguration, self.project,
-                           self.datanamespace)
+                           self.datanamespace, self.type)
 
 # class GetterPool(object):
 #     def __init__(self, maxgetters=8):

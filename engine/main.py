@@ -11,19 +11,20 @@ def main(argv):
     runconfiguration = None
     project = None
     datanamespace = None
+    type = None
 
     try:
-        opts, args = getopt.getopt(argv, "f:b:t:a:r:p:d:",
+        opts, args = getopt.getopt(argv, "f:b:t:a:r:p:d:e:",
                                    ["filter=", "buildnumber=", "threads=", "additionaltags=", "runconfiguration=",
-                                    "project=", "datanamespace"])
+                                    "project=", "datanamespace=", "type="])
     except getopt.GetoptError:
         print(
-            'main.py -f <filter1,filter2> -b <buildnumber> -t <threads> -a <#additional,#tags,#to,#report> -r <run configuration> -p <project> -d <datanamespace>')
+            'main.py -f <filter1,filter2> -b <buildnumber> -t <threads> -a <#additional,#tags,#to,#report> -r <run configuration> -p <project> -d <datanamespace> -e <type>')
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-h', '--help'):
             print(
-                'main.py -f <filter1,filter2> -b <buildnumber> -t <threads> -a <#additional,#tags,#to,#report> -r <run configuration> -p <project> -d <datanamespace>')
+                'main.py -f <filter1,filter2> -b <buildnumber> -t <threads> -a <#additional,#tags,#to,#report> -r <run configuration> -p <project> -d <datanamespace> -e <type>')
             sys.exit()
         elif opt in ("-f", "--filter"):
             filter = arg
@@ -39,10 +40,12 @@ def main(argv):
             project = arg
         elif opt in ("-d", "--datanamespace"):
             datanamespace = arg
-    arglist = [filter, buildnumber, threads, runconfiguration, project, datanamespace]
+        elif opt in ("-e", "--type"):
+            type = arg
+    arglist = [filter, buildnumber, threads, runconfiguration, project, datanamespace, type]
     if None in arglist:
-        raise Exception('Correct the arguments, item missing!!!')
-    tc = ThreadControl(filter, buildnumber, threads, additionaltags, runconfiguration, project, datanamespace)
+        raise Exception('Correct the command line arguments, item missing!!!')
+    tc = ThreadControl(filter, buildnumber, threads, additionaltags, runconfiguration, project, datanamespace, type)
     tc.execute()
 
 

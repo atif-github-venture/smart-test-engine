@@ -1,8 +1,6 @@
 import json
 import os
 import time
-
-# from engine.globalinfo import GlobalInfo
 from engine.heart import Heart
 from util.api import Api
 from util.saucelabs import SauceLabs
@@ -11,7 +9,7 @@ from util.saucelabs import SauceLabs
 class Execute:
     session_id = None
 
-    def __init__(self, test, f, b, a, r, p, d):
+    def __init__(self, test, f, b, a, r, p, d, t):
         self.test = test
         self.filter = f
         self.buildnumber = b
@@ -19,11 +17,10 @@ class Execute:
         self.runconfiguration = r
         self.project = p
         self.datanamespace = d
+        self.type = t
         self.status = True
-        # self.g = GlobalInfo
 
     def start_test(self):
-        # self.set_test_information()
         from time import gmtime, strftime
         execution_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         start_time = gmtime()
@@ -49,7 +46,8 @@ class Execute:
                     'testtags': self.test['tags']
                 }
             }
-            # SauceLabs.update_test_info(session_id, self.buildnumber(), self.status)
+            if self.type == 'sauce':
+                SauceLabs.update_test_info(self.session_id, self.buildnumber(), self.status)
             print(json.dumps(mictest))
         else:
             raise Exception('\nOops!!! Framework not configured to run for following tag/s -> ' + self.test['tags'])
@@ -94,8 +92,10 @@ class Execute:
         step = []
         steps = self.test['Steps']
         from util.webdriver import Driver
-        d = Driver().setUp(self.test['testname'])
-        session_id = d.session_id
+        d = Driver().setUp(self.test['testname'], self.type)
+        if d is None:
+            raise Exception('Driver initiate failed!!!')
+        self.session_id = d.session_id
         for i in range(len(steps)):
             identifier = self.get_repository_details(steps[i]['identifier'])
             data = self.get_data(steps[i]['data']) if steps[i]['data'] != '' else None
@@ -118,6 +118,7 @@ class Execute:
                 self.status = False
                 # Heart.quit_driver(None)
                 break
+        d = None
         return step
 
     def get_data(self, search):
