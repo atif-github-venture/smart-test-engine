@@ -19,6 +19,7 @@ def set_identifier(driver, identifier):
     except (NoSuchElementException):
         return False
 
+
 class Heart:
     errorbody = None
 

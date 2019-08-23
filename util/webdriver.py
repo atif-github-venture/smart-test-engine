@@ -4,7 +4,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
-class Driver():
+class Driver:
     driver = None
     def setUp(self, test_name, type):
         dc = self.create_desired_capabilities(test_name)
@@ -14,7 +14,9 @@ class Driver():
             if type == 'local':
                 self.driver = webdriver.Chrome(executable_path=path + '/chromedriver', desired_capabilities=dc)
             elif type == 'sauce':
-                self.driver = webdriver.Remote(command_executor="https://fatebamboo:9099ed6e-b6ab-42d0-a2d1-76fe26985c74@ondemand.saucelabs.com:443/wd/hub", desired_capabilities=dc)
+                self.driver = webdriver.Remote(
+                    command_executor="https://fatebamboo:9099ed6e-b6ab-42d0-a2d1-76fe26985c74@ondemand.saucelabs.com:443/wd/hub",
+                    desired_capabilities=dc)
             else:
                 return None
             self.driver.maximize_window()

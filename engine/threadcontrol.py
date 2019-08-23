@@ -38,6 +38,7 @@ def get_data_for_execution(self):
                      'temp', 'data.json'))
     get_data_namespace(self.datanamespace, self.project, path)
 
+
 def thread_initiate(t, f, b, a, r, p, d, ty):
     # lock.acquire()
     from engine.execute import Execute
@@ -65,7 +66,7 @@ def call_for_execution(f, b, a, r, p, d, ty):
     # for thread in threads:
     #     thread.join()
 
-    #ThreadPoolExecutor
+    # ThreadPoolExecutor
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(test_to_execute)) as executor:
         future_to_url = {executor.submit(thread_initiate, t, f, b, a, r, p, d, ty): t for t in test_to_execute}
 

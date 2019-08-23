@@ -1,5 +1,6 @@
 from sauceclient import SauceClient
 
+
 class SauceLabs:
 
     def update_test_info(j, b, p):

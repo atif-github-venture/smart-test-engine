@@ -1,6 +1,5 @@
 import json
 import os
-import time
 from engine.heart import Heart
 from util.api import Api
 from util.saucelabs import SauceLabs
@@ -21,20 +20,20 @@ class Execute:
         self.status = True
 
     def start_test(self):
-        from time import gmtime, strftime
-        execution_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-        start_time = gmtime()
+        from datetime import datetime, timezone
+        execution_time = datetime.now(timezone.utc)
+        start_time = datetime.now(timezone.utc)
         if any("#web" in s for s in self.test['tags']):
             rsteps = self.run_ui_test()
-            end_time = gmtime()
-            time_diff = time.mktime(end_time) - time.mktime(start_time)
+            end_time = datetime.now(timezone.utc)
+            time_diff = end_time - start_time
             mictest = {
                 'testname': self.test['testname'],
                 'status': self.status,
-                'execution_time': execution_time,
-                'start_time': strftime("%Y-%m-%d %H:%M:%S", start_time),
-                'end_time': strftime("%Y-%m-%d %H:%M:%S", end_time),
-                'duration': time_diff,
+                'execution_time': execution_time.isoformat(),
+                'start_time': start_time.isoformat(),
+                'end_time': end_time.isoformat(),
+                'duration': time_diff.seconds,
                 'Steps': rsteps,
                 'test_build_info': {
                     'filter': self.filter,
@@ -47,43 +46,13 @@ class Execute:
                 }
             }
             if self.type == 'sauce':
-                SauceLabs.update_test_info(self.session_id, self.buildnumber(), self.status)
+                SauceLabs.update_test_info(self.session_id, self.buildnumber, self.status)
+            from util.elasticsearch import ElasticSearch as es
+            es().post_to_elasticsearch('localhost', 9200, self.project, json.dumps(mictest))
             print(json.dumps(mictest))
         else:
             raise Exception('\nOops!!! Framework not configured to run for following tag/s -> ' + self.test['tags'])
         print('************************')
-        # self.g = None
-
-
-    # def set_test_information(self):
-    #     self.g.set_filter(GlobalInfo, self.filter)
-    #     self.g.set_buildnumber(self.buildnumber)
-    #     self.g.set_additionaltags(self.additionaltags)
-    #     self.g.set_runconfiguration(self.runconfiguration)
-    #     self.g.set_project(self.project)
-    #     self.g.set_datanamespace(self.datanamespace)
-    #     self.g.set_testname(self.test['testname'])
-    #     self.g.set_testtags(self.test['tags'])
-
-    # def start_macrotest(self):
-    #     microtestlist = self.test['MicroTest']
-    #     mactest = []
-    #     # list of micro test
-    #     for i in range(len(microtestlist)):
-    #         # Inside individual micro test
-    #         steps = microtestlist[i]['Steps']
-    #         # If a single step in a micro test fails, break the entire macro test
-    #         if self.status is False:
-    #             break
-    #         else:
-    #             rsteps = self.run_micro_test_steps(steps)
-    #             mictest = {
-    #                 'microtestname' : microtestlist[i]['microtestname'],
-    #                 'Steps': rsteps
-    #             }
-    #             mactest.append(mictest)
-    #     print('************************')
-    #     print(json.dumps(mactest))
 
     def get_repository_details(self, d):
         return Api('api.repository.path', d, self.project, "").getcall_repository()
@@ -99,8 +68,6 @@ class Execute:
         for i in range(len(steps)):
             identifier = self.get_repository_details(steps[i]['identifier'])
             data = self.get_data(steps[i]['data']) if steps[i]['data'] != '' else None
-
-
             stepstatus = Heart().execute_step(d, identifier, steps[i]['action'], data)
             rstep = {
                 'identifier': steps[i]['identifier'],
@@ -116,7 +83,6 @@ class Execute:
                 rstep['error'] = stepstatus[1]
                 step.append(rstep)
                 self.status = False
-                # Heart.quit_driver(None)
                 break
         d = None
         return step
