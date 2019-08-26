@@ -8,6 +8,8 @@ class Driver:
     driver = None
 
     def setUp(self, test_name, type, ip):
+        import time
+        time.sleep(5)
         try:
             path = os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
                                 'resources')
@@ -24,6 +26,8 @@ class Driver:
                     command_executor='http://localhost:4444/wd/hub',
                     desired_capabilities=DesiredCapabilities.CHROME)
             elif type == 'digitalocean':
+                if ip is None:
+                    raise Exception('IP is empty and not set, somewthing wrong in the cloud image creation :(:(:(')
                 self.driver = webdriver.Remote(
                     command_executor='http://'+ip+':4444/wd/hub',
                     desired_capabilities=DesiredCapabilities.CHROME)
@@ -33,7 +37,9 @@ class Driver:
             self.driver.implicitly_wait(5)
             return self.driver
         except WebDriverException as e:
+            print('Failure in driver setup()...')
             print(str(e))
+            return None
 
     def create_desired_capabilities(self, test_name):
         path = (

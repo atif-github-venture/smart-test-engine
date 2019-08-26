@@ -2,22 +2,22 @@
 
 export DIGITAL_OCEAN_ACCESS_TOKEN="ca4fe5b59b62d1770e2f73e9f8c30e66778870373161f9d228fc188fd1941343"
 echo "start"
-echo "selenium-yoyo"
+echo "$1"
 
 docker-machine create \
   --driver digitalocean \
   --digitalocean-region "nyc1" \
   --digitalocean-size "s-1vcpu-1gb" \
   --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN \
-  selenium-yoyo;
+  $1;
 
-docker-machine env selenium-yoyo
-eval $(docker-machine env selenium-yoyo)
-echo "ip:: $(docker-machine ip selenium-yoyo)"
+docker-machine env $1
+eval $(docker-machine env $1)
+echo "ip:: $(docker-machine ip $1)"
 cd ..
 cd resources
 docker-compose -f smart-compose.yml up -d
 
-#export HUB_ADDRESS=$(docker-machine ip selenium-yoyo)
+#export HUB_ADDRESS=$(docker-machine ip $1)
 
-#docker-machine rm selenium-yoyo -y
+#docker-machine rm $1 -y

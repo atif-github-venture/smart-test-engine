@@ -14,7 +14,8 @@ def spin_cloud_machine_for_execution(machine_name):
                      'resources', 'smart-digital.sh'))
     import subprocess
     ip = None
-    p = subprocess.Popen(args=[path, "test"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    cmd = path + " " + machine_name
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     for line in p.stdout.readlines():
         str = line.decode('utf-8')
         if 'ip:: ' in line.decode('utf-8'):
@@ -44,6 +45,8 @@ def spin_cloud_machine_for_execution(machine_name):
             time.sleep(1)
             if counter > 50:
                 break
+    if code != 200:
+        destroy_cloud_instance(machine_name)
     return ip
 
 
@@ -83,8 +86,18 @@ def spin_cloud_machine_for_execution(machine_name):
 #     return None
 
 
+def destroy_cloud_instance(machine_name):
+    import subprocess
+    p = subprocess.Popen(args=['docker-machine rm ' + machine_name + ' -y'], shell=True, stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    p.wait()
+    p.communicate()
+    print('Deleted the cloud image and selenium grid -> ' + machine_name)
+
+
 class Execute:
     session_id = None
+    machine_name = None
 
     def __init__(self, test, f, b, a, r, p, d, t):
         self.test = test
@@ -105,7 +118,10 @@ class Execute:
             from util.common import to_hypen_lowercase
             ip = None
             if self.type == 'digitalocean':
-                ip = spin_cloud_machine_for_execution(to_hypen_lowercase(self.test['testname']))
+                self.machine_name = to_hypen_lowercase(self.test['testname'])
+                ip = spin_cloud_machine_for_execution(self.machine_name)
+                if ip is None:
+                    raise Exception('Exiting tests since could machine instantiation failed :(:(:(')
             rsteps = self.run_ui_test(ip)
             end_time = datetime.now(timezone.utc)
             time_diff = end_time - start_time
@@ -132,12 +148,7 @@ class Execute:
             from util.elasticsearch import ElasticSearch as es
             es().post_to_elasticsearch('localhost', 9200, self.project, json.dumps(mictest))
             print(json.dumps(mictest))
-            import subprocess
-            p = subprocess.Popen(args=['docker-machine rm selenium-yoyo -y'], shell=True, stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT)
-            p.wait()
-            p.communicate()
-            print('Deleted the cloud image and selenium grid...')
+            destroy_cloud_instance(self.machine_name)
         else:
             raise Exception('\nOops!!! Framework not configured to run for following tag/s -> ' + self.test['tags'])
         print('************************')
@@ -151,7 +162,9 @@ class Execute:
         from util.webdriver import Driver
         d = Driver().setUp(self.test['testname'], self.type, ip)
         if d is None:
-            raise Exception('Driver initiate failed!!!')
+            if ip is not None:
+                destroy_cloud_instance(self.machine_name)
+            raise Exception('Initiate driver failed!!!')
         self.session_id = d.session_id
         for i in range(len(steps)):
             identifier = self.get_repository_details(steps[i]['identifier'])
