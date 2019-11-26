@@ -8,13 +8,13 @@ from util.api import Api
 from util.saucelabs import SauceLabs
 
 
-def spin_cloud_machine_for_execution(machine_name):
+def spin_cloud_machine_for_execution(machine_name, token):
     path = (
         os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
                      'resources', 'smart-digital.sh'))
     import subprocess
     ip = None
-    cmd = path + " " + machine_name
+    cmd = path + " " + machine_name + " " + token
     p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     for line in p.stdout.readlines():
         str = line.decode('utf-8')
@@ -99,7 +99,7 @@ class Execute:
     session_id = None
     machine_name = None
 
-    def __init__(self, test, f, b, a, r, p, d, t):
+    def __init__(self, test, f, b, a, r, p, d, t, tok):
         self.test = test
         self.filter = f
         self.buildnumber = b
@@ -109,6 +109,7 @@ class Execute:
         self.datanamespace = d
         self.type = t
         self.status = True
+        self.token = tok
 
     def start_test(self):
         from datetime import datetime, timezone
@@ -119,7 +120,7 @@ class Execute:
             ip = None
             if self.type == 'digitalocean':
                 self.machine_name = to_hypen_lowercase(self.test['testname'])
-                ip = spin_cloud_machine_for_execution(self.machine_name)
+                ip = spin_cloud_machine_for_execution(self.machine_name, self.token)
                 if ip is None:
                     raise Exception('Exiting tests since could machine instantiation failed :(:(:(')
             rsteps = self.run_ui_test(ip)
@@ -158,7 +159,7 @@ class Execute:
 
     def run_ui_test(self, ip):
         step = []
-        steps = self.test['Steps']
+        steps = self.test['steps']
         from util.webdriver import Driver
         d = Driver().setUp(self.test['testname'], self.type, ip)
         if d is None:

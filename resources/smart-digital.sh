@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-export DIGITAL_OCEAN_ACCESS_TOKEN="ca4fe5b59b62d1770e2f73e9f8c30e66778870373161f9d228fc188fd1941343"
+export DIGITAL_OCEAN_ACCESS_TOKEN=$2
 echo "start"
 echo "$1"
+echo "$2"
 
 docker-machine create \
   --driver digitalocean \

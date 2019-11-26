@@ -12,14 +12,15 @@ def main(argv):
     project = None
     datanamespace = None
     type = None
+    token = None
 
     try:
-        opts, args = getopt.getopt(argv, "f:b:t:a:r:p:d:e:",
+        opts, args = getopt.getopt(argv, "f:b:t:a:r:p:d:e:o:",
                                    ["filter=", "buildnumber=", "threads=", "additionaltags=", "runconfiguration=",
-                                    "project=", "datanamespace=", "type="])
+                                    "project=", "datanamespace=", "type=", "token="])
     except getopt.GetoptError:
         print(
-            'main.py -f <filter1,filter2> -b <buildnumber> -t <threads> -a <#additional,#tags,#to,#report> -r <run configuration> -p <project> -d <datanamespace> -e <type>')
+            'main.py -f <filter1,filter2> -b <buildnumber> -t <threads> -a <#additional,#tags,#to,#report> -r <run configuration> -p <project> -d <datanamespace> -e <type> -o <token>')
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-h', '--help'):
@@ -42,10 +43,12 @@ def main(argv):
             datanamespace = arg
         elif opt in ("-e", "--type"):
             type = arg
-    arglist = [filter, buildnumber, threads, runconfiguration, project, datanamespace, type]
+        elif opt in ("-o", "--token"):
+            token = arg
+    arglist = [filter, buildnumber, threads, runconfiguration, project, datanamespace, type, token]
     if None in arglist:
         raise Exception('Correct the command line arguments, item missing!!!')
-    tc = ThreadControl(filter, buildnumber, threads, additionaltags, runconfiguration, project, datanamespace, type)
+    tc = ThreadControl(filter, buildnumber, threads, additionaltags, runconfiguration, project, datanamespace, type, token)
     tc.execute()
 
 

@@ -39,14 +39,14 @@ def get_data_for_execution(self):
     get_data_namespace(self.datanamespace, self.project, path)
 
 
-def thread_initiate(t, f, b, a, r, p, d, ty):
+def thread_initiate(t, f, b, a, r, p, d, ty, tok):
     # lock.acquire()
     from engine.execute import Execute
-    Execute(t, f, b, a, r, p, d, ty).start_test()
+    Execute(t, f, b, a, r, p, d, ty, tok).start_test()
     # lock.release()
 
 
-def call_for_execution(f, b, a, r, p, d, ty):
+def call_for_execution(f, b, a, r, p, d, ty, tok):
     from time import strftime, gmtime
     st_time = gmtime()
     path = (
@@ -68,7 +68,7 @@ def call_for_execution(f, b, a, r, p, d, ty):
 
     # ThreadPoolExecutor
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(test_to_execute)) as executor:
-        future_to_url = {executor.submit(thread_initiate, t, f, b, a, r, p, d, ty): t for t in test_to_execute}
+        future_to_url = {executor.submit(thread_initiate, t, f, b, a, r, p, d, ty, tok): t for t in test_to_execute}
 
         for future in concurrent.futures.as_completed(future_to_url):
             t = future_to_url[future]
@@ -86,7 +86,7 @@ def call_for_execution(f, b, a, r, p, d, ty):
 
 
 class ThreadControl:
-    def __init__(self, filter, buildnumber, threads, additionaltags, runconfiguration, project, datanamespace, type):
+    def __init__(self, filter, buildnumber, threads, additionaltags, runconfiguration, project, datanamespace, type, tok):
         self.filter = filter
         self.buildnumber = buildnumber
         self.threads = threads
@@ -95,11 +95,12 @@ class ThreadControl:
         self.project = project
         self.datanamespace = datanamespace
         self.type = type
+        self.tok = tok
 
     def execute(self):
         get_data_for_execution(self)
         call_for_execution(self.filter, self.buildnumber, self.additionaltags, self.runconfiguration, self.project,
-                           self.datanamespace, self.type)
+                           self.datanamespace, self.type, self.tok)
 
 # class GetterPool(object):
 #     def __init__(self, maxgetters=8):
