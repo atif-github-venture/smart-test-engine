@@ -15,8 +15,10 @@ docker-machine create \
 docker-machine env $1
 eval $(docker-machine env $1)
 echo "ip:: $(docker-machine ip $1)"
-cd ..
-cd resources
+ls -ltr
+#cd ..
+#cd resources
+ls -ltr
 docker-compose -f smart-compose.yml up -d
 
 #export HUB_ADDRESS=$(docker-machine ip $1)
