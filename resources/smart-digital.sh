@@ -12,6 +12,9 @@ docker-machine create \
   --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN \
   $1;
 
+docker-machine regenerate-certs $1 -y
+docker-machine ls
+
 docker-machine env $1
 eval $(docker-machine env $1)
 echo "ip:: $(docker-machine ip $1)"
