@@ -4,12 +4,15 @@ export DIGITAL_OCEAN_ACCESS_TOKEN=$2
 echo "start"
 echo "$1"
 echo "$2"
+export UID=$(id -u)
+export GID=$(id -g)
 
 docker-machine create \
   --driver digitalocean \
   --digitalocean-region "nyc1" \
   --digitalocean-size "s-1vcpu-1gb" \
   --digitalocean-ssh-user=core \
+  --digitalocean-ssh-user "root" \
   --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN \
   $1;
 
