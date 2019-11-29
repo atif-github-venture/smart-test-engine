@@ -9,10 +9,10 @@ docker-machine create \
   --driver digitalocean \
   --digitalocean-region "nyc1" \
   --digitalocean-size "s-1vcpu-1gb" \
+  --digitalocean-ssh-user=core \
   --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN \
   $1;
 
-docker-machine regenerate-certs $1 -y
 docker-machine ls
 
 docker-machine env $1
