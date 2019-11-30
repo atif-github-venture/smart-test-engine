@@ -9,7 +9,7 @@ docker-machine --debug create \
   --digitalocean-region "nyc1" \
   --digitalocean-size "s-1vcpu-1gb" \
   --digitalocean-ssh-user "root" \
-#  --engine-opt tlsverify=false \
+  --engine-opt tlsverify=false \
   --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN \
   $1;
 
