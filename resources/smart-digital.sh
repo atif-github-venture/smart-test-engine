@@ -4,14 +4,11 @@ export DIGITAL_OCEAN_ACCESS_TOKEN="ca4fe5b59b62d1770e2f73e9f8c30e66778870373161f
 echo "start"
 echo "$1"
 echo "$2"
-export user=whoami
-echo "$user"
 
 docker-machine --debug create \
   --driver digitalocean \
   --digitalocean-region "nyc1" \
   --digitalocean-size "s-1vcpu-1gb" \
-  --digitalocean-ssh-user "root" \
   --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN \
   $1;
 
@@ -20,6 +17,7 @@ docker-machine ls
 docker-machine env $1
 eval $(docker-machine env $1)
 echo "ip:: $(docker-machine ip $1)"
+docker-machine ls
 
 #cd ..
 #cd resources
