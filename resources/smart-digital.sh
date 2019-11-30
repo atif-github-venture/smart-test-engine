@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
 
-export DIGITAL_OCEAN_ACCESS_TOKEN=$2
+export DIGITAL_OCEAN_ACCESS_TOKEN="ca4fe5b59b62d1770e2f73e9f8c30e66778870373161f9d228fc188fd1941343"
 echo "start"
 echo "$1"
 echo "$2"
-export UID=$(id -u)
-export GID=$(id -g)
+export user=whoami
 
 docker-machine create \
   --driver digitalocean \
   --digitalocean-region "nyc1" \
   --digitalocean-size "s-1vcpu-1gb" \
-  --digitalocean-ssh-user=core \
-  --digitalocean-ssh-user "root" \
+  --digitalocean-ssh-user user \
+  --digitalocean-ssh-key-path ~/.ssh/id_rsa.pub \
   --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN \
   $1;
 
