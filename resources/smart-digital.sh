@@ -5,12 +5,13 @@ echo "start"
 echo "$1"
 echo "$2"
 export user=whoami
+echo "$user"
 
 docker-machine create \
   --driver digitalocean \
   --digitalocean-region "nyc1" \
   --digitalocean-size "s-1vcpu-1gb" \
-  --digitalocean-ssh-user user \
+  --digitalocean-ssh-user "root" \
   --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN \
   $1;
 
