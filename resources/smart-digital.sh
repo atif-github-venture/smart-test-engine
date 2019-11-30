@@ -11,7 +11,6 @@ docker-machine create \
   --digitalocean-region "nyc1" \
   --digitalocean-size "s-1vcpu-1gb" \
   --digitalocean-ssh-user user \
-  --digitalocean-ssh-key-path ~/.ssh/id_rsa.pub \
   --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN \
   $1;
 
