@@ -7,7 +7,7 @@ echo "$2"
 export user=whoami
 echo "$user"
 
-docker-machine create \
+docker-machine --debug create \
   --driver digitalocean \
   --digitalocean-region "nyc1" \
   --digitalocean-size "s-1vcpu-1gb" \
@@ -16,9 +16,6 @@ docker-machine create \
   $1;
 
 docker-machine ls
-
-docker-machine regenerate-certs $1 -y
-docker-machine restart $1
 
 docker-machine env $1
 eval $(docker-machine env $1)
