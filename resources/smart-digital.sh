@@ -17,6 +17,9 @@ docker-machine create \
 
 docker-machine ls
 
+docker-machine regenerate-certs $1 -y
+docker-machine restart $1
+
 docker-machine env $1
 eval $(docker-machine env $1)
 echo "ip:: $(docker-machine ip $1)"
