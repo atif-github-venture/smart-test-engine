@@ -9,15 +9,14 @@ docker-machine --debug create \
   --driver digitalocean \
   --digitalocean-region "nyc1" \
   --digitalocean-size "s-1vcpu-1gb" \
-  --digitalocean-ssh-user "root" \
   --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN \
   $1;
 
 docker-machine ls
 
-docker-machine env $1
-eval $(docker-machine env $1)
-echo "ip:: $(docker-machine ip $1)"
+docker-machine env default
+eval $(docker-machine env default)
+echo "ip:: $(docker-machine ip default)"
 docker-machine ls
 
 #cd ..

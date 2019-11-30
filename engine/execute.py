@@ -24,6 +24,7 @@ def spin_cloud_machine_for_execution(machine_name, token):
     retval = p.wait()
     p.communicate()
     p.wait()
+    ip = "104.248.63.53"
     print('The cloud platform is ready for execution!!!')
     print('IP obtained -> ' + ip)
     print('Waiting Selenium Server to load')
