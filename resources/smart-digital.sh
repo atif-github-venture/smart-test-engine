@@ -7,7 +7,7 @@ echo "$2"
 
 docker-machine --debug create \
   --driver digitalocean \
-  --digitalocean-region "nyc1" \
+  --digitalocean-region "sfo1" \
   --digitalocean-size "s-1vcpu-1gb" \
   --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN \
   $1;
