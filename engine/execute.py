@@ -87,11 +87,11 @@ def spin_cloud_machine_for_execution(machine_name, token):
 
 
 def destroy_cloud_instance(machine_name):
-    # import subprocess
-    # p = subprocess.Popen(args=['docker-machine rm ' + machine_name + ' -y'], shell=True, stdout=subprocess.PIPE,
-    #                      stderr=subprocess.STDOUT)
-    # p.wait()
-    # p.communicate()
+    import subprocess
+    p = subprocess.Popen(args=['docker-machine rm ' + machine_name + ' -y'], shell=True, stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    p.wait()
+    p.communicate()
     print('Deleted the cloud image and selenium grid -> ' + machine_name)
 
 

@@ -8,8 +8,8 @@ docker-machine --debug create \
   --driver digitalocean \
   --digitalocean-region "nyc1" \
   --digitalocean-size "s-1vcpu-1gb" \
-  --digitalocean-ssh-user "root" \
-  --engine-opt tlsverify=false \
+#  --digitalocean-ssh-user "root" \
+#  --engine-opt tlsverify=false \
   --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN \
   $1;
 
