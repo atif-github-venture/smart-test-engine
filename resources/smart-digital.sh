@@ -4,7 +4,8 @@ export DIGITAL_OCEAN_ACCESS_TOKEN="$2"
 echo "start"
 echo "$1"
 
-docker-machine --debug create \
+docker-machine create \
+#docker-machine --debug create \
   --driver digitalocean \
   --digitalocean-region "nyc1" \
   --digitalocean-size "s-1vcpu-1gb" \
