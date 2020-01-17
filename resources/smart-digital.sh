@@ -4,13 +4,11 @@ export DIGITAL_OCEAN_ACCESS_TOKEN="$2"
 echo "start"
 echo "$1"
 
-docker-machine create \
 #docker-machine --debug create \
+docker-machine create \
   --driver digitalocean \
   --digitalocean-region "nyc1" \
   --digitalocean-size "s-1vcpu-1gb" \
-#  --digitalocean-ssh-user "root" \
-#  --engine-opt tlsverify=false \
   --digitalocean-access-token $DIGITAL_OCEAN_ACCESS_TOKEN \
   $1;
 
