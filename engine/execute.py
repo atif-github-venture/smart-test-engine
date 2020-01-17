@@ -158,6 +158,7 @@ class Execute:
         return Api('api.repository.path', d, self.project, "").getcall_repository()
 
     def run_ui_test(self, ip):
+        print('run_ui_test')
         step = []
         steps = self.test['steps']
         from util.webdriver import Driver
