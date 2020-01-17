@@ -123,6 +123,8 @@ class Execute:
                 ip = spin_cloud_machine_for_execution(self.machine_name, self.token)
                 if ip is None:
                     raise Exception('Exiting tests since could machine instantiation failed :(:(:(')
+                else:
+                    print('obtained ip:'+ip)
             rsteps = self.run_ui_test(ip)
             end_time = datetime.now(timezone.utc)
             time_diff = end_time - start_time
