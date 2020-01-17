@@ -162,6 +162,7 @@ class Execute:
         steps = self.test['steps']
         from util.webdriver import Driver
         d = Driver().setUp(self.test['testname'], self.type, ip)
+        print('Driver is created :):):)')
         if d is None:
             if ip is not None:
                 destroy_cloud_instance(self.machine_name)
