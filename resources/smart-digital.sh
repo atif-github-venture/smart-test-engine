@@ -4,6 +4,8 @@ export DIGITAL_OCEAN_ACCESS_TOKEN="$2"
 echo "start"
 echo "$1"
 
+docker-machine rm validate-admin-drop-down-menu -y
+
 #docker-machine --debug create \
 docker-machine create \
   --driver digitalocean \
