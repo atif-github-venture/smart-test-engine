@@ -4,7 +4,7 @@ export DIGITAL_OCEAN_ACCESS_TOKEN="$2"
 echo "start"
 echo "$1"
 
-docker-machine rm validate-admin-drop-down-menu -y
+#docker-machine rm validate-admin-drop-down-menu -y
 
 #docker-machine --debug create \
 docker-machine create \
@@ -20,10 +20,10 @@ docker-machine env $1
 eval $(docker-machine env $1)
 echo "ip:: $(docker-machine ip $1)"
 docker-machine ls
-#cd ..
-#cd resources
-#docker-compose -f smart-compose.yml up -d
-docker-compose -f resources/smart-compose.yml up -d
+cd ..
+cd resources
+docker-compose -f smart-compose.yml up -d
+#docker-compose -f resources/smart-compose.yml up -d
 
 #export HUB_ADDRESS=$(docker-machine ip $1)
 

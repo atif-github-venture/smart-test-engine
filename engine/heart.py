@@ -23,12 +23,13 @@ def set_identifier(driver, identifier):
 class Heart:
     errorbody = None
 
-    def execute_step(self, driver, i, a, d):
+    def execute_step(self, driver, i, a, d, stepname):
         self.identifier = i
         self.action = to_snake_case(a)
         self.data = d
         self.driver = driver
         status = self.execute()
+        self.take_screenshot(stepname)
         if status is False or status is AttributeError:
             return status, self.errorbody
         elif status is True:
@@ -159,3 +160,9 @@ class Heart:
 
     def quit_driver(self):
         self.driver.quit()
+
+    def take_screenshot(self, stepname):
+        try:
+            self.driver.save_screenshot(stepname + '.png')
+        except:
+            return True

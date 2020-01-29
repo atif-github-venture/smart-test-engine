@@ -37,6 +37,7 @@ def get_data_for_execution(self):
         os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
                      'temp', 'data.json'))
     get_data_namespace(self.datanamespace, self.project, path)
+    print('get_data_for_execution -> done')
 
 
 def thread_initiate(t, f, b, a, r, p, d, ty, tok):

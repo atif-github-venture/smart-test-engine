@@ -1,10 +1,11 @@
 import json
 import os
-import sys
 import time
 
 from engine.heart import Heart
 from util.api import Api
+from util.folder import ensure_dir
+from util.images import stitch_screenshot
 from util.saucelabs import SauceLabs
 
 
@@ -124,8 +125,11 @@ class Execute:
                 if ip is None:
                     raise Exception('Exiting tests since could machine instantiation failed :(:(:(')
                 else:
-                    print('obtained ip:'+ip)
-            rsteps = self.run_ui_test(ip)
+                    print('obtained ip:' + ip)
+            temp_path = (
+                os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
+                             'temp'))
+            rsteps = self.run_ui_test(ip, temp_path)
             end_time = datetime.now(timezone.utc)
             time_diff = end_time - start_time
             mictest = {
@@ -159,10 +163,14 @@ class Execute:
     def get_repository_details(self, d):
         return Api('api.repository.path', d, self.project, "").getcall_repository()
 
-    def run_ui_test(self, ip):
+    def run_ui_test(self, ip, path):
         print('run_ui_test')
         step = []
-        steps = self.test['steps']
+        steps = self.test['Steps']
+        from util import common
+        path = path + '/screenshot/' + common.to_snake_case(self.test['testname'])
+        ensure_dir(path)
+        testname = common.to_snake_case(self.test['testname'])
         from util.webdriver import Driver
         d = Driver().setUp(self.test['testname'], self.type, ip)
         print('Driver is created :):):)')
@@ -174,7 +182,9 @@ class Execute:
         for i in range(len(steps)):
             identifier = self.get_repository_details(steps[i]['identifier'])
             data = self.get_data(steps[i]['data']) if steps[i]['data'] != '' else None
-            stepstatus = Heart().execute_step(d, identifier, steps[i]['action'], data)
+            filename = path + '/' + testname + '_' + str(i)
+            ensure_dir(filename)
+            stepstatus = Heart().execute_step(d, identifier, steps[i]['action'], data, filename)
             rstep = {
                 'identifier': steps[i]['identifier'],
                 'action': steps[i]['action'],
@@ -191,6 +201,7 @@ class Execute:
                 self.status = False
                 break
         d = None
+        stitch_screenshot(path)
         return step
 
     def get_data(self, search):
