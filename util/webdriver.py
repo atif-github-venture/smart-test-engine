@@ -30,7 +30,7 @@ class Driver:
                 print('digital ocean block...')
                 print('ip: '+ip)
                 if ip is None:
-                    raise Exception('IP is empty and not set, somewthing wrong in the cloud image creation :(:(:(')
+                    raise Exception('IP is empty and not set, something wrong in the cloud image creation :(:(:(')
                 print('lets connect to remote...')
                 self.driver = webdriver.Remote(
                     command_executor='http://'+ip+':4444/wd/hub',
