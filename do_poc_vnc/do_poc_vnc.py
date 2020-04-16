@@ -1,3 +1,4 @@
+import requests
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import digitalocean
@@ -66,6 +67,30 @@ class Testing:
         driver.quit()
 
 
+def sync_for_hub_availability(hub_ip):
+    code = 0
+    counter = 0
+    while code != 200:
+        try:
+            code = requests.get('http://' + hub_ip + ':4444/grid/api/hub').status_code
+            print('Polling for selenium grid\'s health -> request status code: ')
+            print(code)
+            counter += 1
+            time.sleep(1)
+            if counter > 50:
+                break
+        except Exception as e:
+            print(e)
+            counter += 1
+            time.sleep(1)
+            if counter > 50:
+                break
+    if code != 200:
+        return False, 'Failed to get stable hub'
+    else:
+        return True, None
+
+
 class DropletProvision:
     # Secure Copy Protocol
     # scp smart-compose.yml root@64.227.5.73:/root
@@ -76,26 +101,38 @@ class DropletProvision:
         self.user = user
         self.list_of_files = list_of_files
 
-    def execute(self):
+    def provision(self):
+        try:
+            ssh = SSHClient()
+            ssh.load_system_host_keys()
+            ssh.set_missing_host_key_policy(AutoAddPolicy())
+            ssh.connect(hostname=self.host, username=self.user)
+            scp = SCPClient(ssh.get_transport())
+            for file in self.list_of_files:
+                file_name = file.split('/')[-1]
+                scp.put(file, file_name)
+                ssh.exec_command('chmod +x /root/' + file_name)
+
+            ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command('./' + self.list_of_files[0].split('/')[-1])
+            while not ssh_stdout.channel.exit_status_ready() and not ssh_stdout.channel.recv_ready():
+                time.sleep(1)
+
+            print(ssh_stdout.readlines())
+            print('***************************************')
+            print(ssh_stderr.readlines())
+            ssh.close()
+            scp.close()
+            return sync_for_hub_availability(self.host)
+        except Exception as ex:
+            return False, ex
+
+    def start_recording(self):
         ssh = SSHClient()
         ssh.load_system_host_keys()
         ssh.set_missing_host_key_policy(AutoAddPolicy())
         ssh.connect(hostname=self.host, username=self.user)
-        scp = SCPClient(ssh.get_transport())
-        for file in self.list_of_files:
-            file_name = file.split('/')[-1]
-            scp.put(file, file_name)
-            ssh.exec_command('chmod +x /root/' + file_name)
-
-        ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command('./' + self.list_of_files[0].split('/')[-1])
-        while not ssh_stdout.channel.exit_status_ready() and not ssh_stdout.channel.recv_ready():
-            time.sleep(1)
-
-        print(ssh_stdout.readlines())
-        print('***************************************')
-        print(ssh_stderr.readlines())
+        ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command('flvrec.py -P pass.txt localhost:0')
         ssh.close()
-        scp.close()
 
 
 def main():
@@ -111,13 +148,19 @@ def main():
     sc = (
         os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
                      'do_poc_vnc', 'smart-compose.yml'))
-    dp = DropletProvision(do.ip, user, [dp, sc])
-    # dp.execute()
-    t = Testing('204.48.22.188')
-    t.execute()
+    dp = DropletProvision('192.241.145.23', user, [dp, sc])
+    # status, msg = dp.provision()
+    status, msg = True, ''
+    if not status:
+        print('Destroying machine as provisioning failed:::')
+        print(msg)
+        do.destroy()
+    else:
+        dp.start_recording()
+        t = Testing('192.241.145.23')
+        t.execute()
     en_time = gmtime()
     print('total execution time: ' + str(time.mktime(en_time) - time.mktime(st_time)))
-    # do.destroy()
 
 
 if __name__ == '__main__':
