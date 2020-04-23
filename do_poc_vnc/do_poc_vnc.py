@@ -140,7 +140,7 @@ def main():
     do_token = 'ca4fe5b59b62d1770e2f73e9f8c30e66778870373161f9d228fc188fd1941343'
     user = 'root'
     do = DigitalOcean(do_token, 'testing-do-fb')
-    # do.create_droplet()
+    do.create_droplet()
 
     dp = (
         os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
@@ -148,16 +148,16 @@ def main():
     sc = (
         os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
                      'do_poc_vnc', 'smart-compose.yml'))
-    dp = DropletProvision('192.241.145.23', user, [dp, sc])
-    # status, msg = dp.provision()
-    status, msg = True, ''
+    dp = DropletProvision(do.ip, user, [dp, sc])
+    status, msg = dp.provision()
+    # status, msg = True, ''
     if not status:
         print('Destroying machine as provisioning failed:::')
         print(msg)
         do.destroy()
     else:
         dp.start_recording()
-        t = Testing('192.241.145.23')
+        t = Testing(do.ip)
         t.execute()
     en_time = gmtime()
     print('total execution time: ' + str(time.mktime(en_time) - time.mktime(st_time)))

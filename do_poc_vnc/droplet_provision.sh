@@ -15,11 +15,23 @@ git clone https://github.com/matthayes/vnc2flv.git
 cd vnc2flv
 python3 setup.py install
 
-
+apt install tcptrack
+#echo "No" | sudo apt-get install wireshark -y
 echo "provisioning is complete"
 
 
-##to display the jobs running for recording
-#jobs
-#kill %1
-#scp root@192.241.145.23:/root/out202004162210.flv /Users/aahmed/Documents/FE_GIT/smart-test-engine
+##to kill the recording process
+#pkill -f flvrec.py
+#to transfer the recorded file
+#scp -o ConnectTimeout=200 root@104.248.112.56:/root/capture.pcap /Users/aahmed/Documents/FE_GIT/smart-test-engine
+#check process
+#ps -fA | grep flvrec.py
+#check tcp activity at 4444
+#tcptrack -i eth0 port 4444
+#or
+#tcpdump port 4444 and '(tcp-syn|tcp-ack)!=0' -w /var/tmp/capture.pcap
+
+#check the last activity on 4444 and then kill the pid
+
+#tcpdump -s 4444 -w capture.pcap
+#tcpdump -i eth0 -s 0 -w capture.pcap
