@@ -27,7 +27,7 @@ echo "provisioning is complete"
 ##to kill the recording process
 #pkill -f flvrec.py
 #to transfer the recorded file
-#scp -o ConnectTimeout=200 root@104.248.112.56:/root/capture.pcap /Users/aahmed/Documents/FE_GIT/smart-test-engine
+#scp -o ConnectTimeout=200 root@134.122.28.142:/root/tcpdump.pcap /Users/aahmed/Documents/FE_GIT/smart-test-engine
 #check process
 #ps -fA | grep flvrec.py
 #check tcp activity at 4444
@@ -42,3 +42,8 @@ echo "provisioning is complete"
 
 #to view the vnc in local
 #ssh -L 5901:127.0.0.1:5901 root@157.245.137.104
+
+
+#docker image rm -f network_cap
+#docker build -t network_cap -f Dockerfile.
+#docker run --rm --net=host -v $PWD/tcpdump:/tcpdump -it network_cap

@@ -147,7 +147,6 @@ class DropletProvision:
         session = transport.open_session()
         session.set_combine_stderr(True)
         session.get_pty()
-        #for testing purposes we want to force sudo to always to ask for password. because of that we use "-k" key
         session.exec_command("sudo tcpdump -i eth0 port 4444 -w network.pcap")
 
     def stop_recording_transfer_assets(self):
@@ -163,9 +162,11 @@ class DropletProvision:
             filename = ssh_stdout.readlines()
             filename = filename[0].strip()
             print(filename)
-            scp.get(filename, '/Users/aahmed/Documents/FE_GIT/smart-test-engine')
+            path = os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir))
+            print(path)
+            scp.get(filename, path)
             ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command('rm ' + filename)
-            scp.get('network.pcap', '/Users/aahmed/Documents/FE_GIT/smart-test-engine')
+            scp.get('network.pcap', path)
             ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command('rm network.pcap')
             ssh.close()
             scp.close()
@@ -179,7 +180,7 @@ def main():
     do_token = 'ca4fe5b59b62d1770e2f73e9f8c30e66778870373161f9d228fc188fd1941343'
     user = 'root'
     do = DigitalOcean(do_token, 'testing-do-fb')
-    do.create_droplet()
+    # do.create_droplet()
 
     dp = (
         os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
@@ -187,19 +188,19 @@ def main():
     sc = (
         os.path.join(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)),
                      'do_poc_vnc', 'smart-compose.yml'))
-    dp = DropletProvision(do.ip, user, [dp, sc])
-    status, msg = dp.provision()
-    # status, msg = True, ''
+    dp = DropletProvision('134.122.28.142', user, [dp, sc])
+    # status, msg = dp.provision()
+    status, msg = True, ''
     if not status:
         print('Destroying machine as provisioning failed:::')
         print(msg)
         do.destroy()
     else:
-        dp.start_video_recording()
-        dp.start_network_recording()
-        t = Testing(do.ip)
+        # dp.start_video_recording()
+        # dp.start_network_recording()
+        t = Testing('134.122.28.142')
         t.execute()
-        dp.stop_recording_transfer_assets()
+        # dp.stop_recording_transfer_assets()
     en_time = gmtime()
     print('total execution time: ' + str(time.mktime(en_time) - time.mktime(st_time)))
 
