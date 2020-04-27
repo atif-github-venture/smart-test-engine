@@ -9,6 +9,10 @@ docker-compose -f smart-compose.yml up -d
 touch pass.txt
 echo "secret" > pass.txt
 
+#touch net.sh
+#echo "tcpdump port 4444 -w network.pcap" > net.sh
+#sudo chmod +x net.sh
+
 #for video recording
 apt install python3-pip -y
 git clone https://github.com/matthayes/vnc2flv.git
@@ -33,5 +37,8 @@ echo "provisioning is complete"
 
 #check the last activity on 4444 and then kill the pid
 
-#tcpdump -s 4444 -w capture.pcap
-#tcpdump -i eth0 -s 0 -w capture.pcap
+#tcpdump -s 4444 -w network.pcap
+#tcpdump -i eth0 -s 0 -w network.pcap
+
+#to view the vnc in local
+#ssh -L 5901:127.0.0.1:5901 root@157.245.137.104

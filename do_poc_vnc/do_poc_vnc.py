@@ -1,3 +1,6 @@
+import getpass
+import re
+
 import requests
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -126,13 +129,49 @@ class DropletProvision:
         except Exception as ex:
             return False, ex
 
-    def start_recording(self):
+    def start_video_recording(self):
         ssh = SSHClient()
         ssh.load_system_host_keys()
         ssh.set_missing_host_key_policy(AutoAddPolicy())
         ssh.connect(hostname=self.host, username=self.user)
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command('flvrec.py -P pass.txt localhost:0')
         ssh.close()
+
+    def start_network_recording(self):
+        # run sudo with paramiko - the capturing requires to be run as sudo else it doesnt capture
+        ssh = SSHClient()
+        ssh.load_system_host_keys()
+        ssh.set_missing_host_key_policy(AutoAddPolicy())
+        ssh.connect(hostname=self.host, username=self.user)
+        transport = ssh.get_transport()
+        session = transport.open_session()
+        session.set_combine_stderr(True)
+        session.get_pty()
+        #for testing purposes we want to force sudo to always to ask for password. because of that we use "-k" key
+        session.exec_command("sudo tcpdump -i eth0 port 4444 -w network.pcap")
+
+    def stop_recording_transfer_assets(self):
+        try:
+            ssh = SSHClient()
+            ssh.load_system_host_keys()
+            ssh.set_missing_host_key_policy(AutoAddPolicy())
+            ssh.connect(hostname=self.host, username=self.user, timeout=200)
+            scp = SCPClient(ssh.get_transport())
+            ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command('pkill -f flvrec.py')
+            ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command('pkill -f network.pcap')
+            ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command('ls | grep *.flv')
+            filename = ssh_stdout.readlines()
+            filename = filename[0].strip()
+            print(filename)
+            scp.get(filename, '/Users/aahmed/Documents/FE_GIT/smart-test-engine')
+            ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command('rm ' + filename)
+            scp.get('network.pcap', '/Users/aahmed/Documents/FE_GIT/smart-test-engine')
+            ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command('rm network.pcap')
+            ssh.close()
+            scp.close()
+            return True, 'Success'
+        except Exception as e:
+            return False, e
 
 
 def main():
@@ -156,9 +195,11 @@ def main():
         print(msg)
         do.destroy()
     else:
-        dp.start_recording()
+        dp.start_video_recording()
+        dp.start_network_recording()
         t = Testing(do.ip)
         t.execute()
+        dp.stop_recording_transfer_assets()
     en_time = gmtime()
     print('total execution time: ' + str(time.mktime(en_time) - time.mktime(st_time)))
 
