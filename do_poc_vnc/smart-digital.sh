@@ -55,3 +55,7 @@ docker-machine ssh $name docker ps
 
 #https://github.com/matthayes/vnc2flv
 #http://www.unixuser.org/~euske/python/vnc2flv/index.html
+
+
+#https://ngrok.com/docs
+#ngrok http 80
