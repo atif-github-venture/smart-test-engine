@@ -20,7 +20,7 @@ class Driver:
             elif type == 'sauce':
                 dc = self.create_desired_capabilities(test_name)
                 self.driver = webdriver.Remote(
-                    command_executor="https://fatebamboo:9099ed6e-b6ab-42d0-a2d1-76fe26985c74@ondemand.saucelabs.com:443/wd/hub",
+                    command_executor="https://user:key@ondemand.saucelabs.com:443/wd/hub",
                     desired_capabilities=dc)
             elif type == 'seleniumgrid':
                 self.driver = webdriver.Remote(
