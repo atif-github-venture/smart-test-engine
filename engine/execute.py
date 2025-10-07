@@ -53,7 +53,7 @@ def spin_cloud_machine_for_execution(machine_name, token):
 
 # def spin_cloud_machine(machine_name):
 #     from resources import digitalocean
-#     droplet = digitalocean.Droplet(token="ca4fe5b59b62d1770e2f73e9f8c30e66778870373161f9d228fc188fd1941343",
+#     droplet = digitalocean.Droplet(token="key",
 #                                    name=machine_name,
 #                                    region='nyc1',  # New York 2
 #                                    image='ubuntu-14-04-x64',  # Ubuntu 14.04 x64
@@ -73,7 +73,7 @@ def spin_cloud_machine_for_execution(machine_name, token):
 
 # import json
 # import requests
-# api_token = 'ca4fe5b59b62d1770e2f73e9f8c30e66778870373161f9d228fc188fd1941343'
+# api_token = 'key'
 # api_url_base = 'https://api.digitalocean.com/v2/'
 # headers = {'Content-Type': 'application/json',
 #            'Authorization': 'Bearer {0}'.format(api_token)}
