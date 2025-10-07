@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export DIGITAL_OCEAN_ACCESS_TOKEN="ca4fe5b59b62d1770e2f73e9f8c30e66778870373161f9d228fc188fd1941343"
+export DIGITAL_OCEAN_ACCESS_TOKEN="key"
 echo "Spinning up 1 droplet/s..."
 echo $DIGITAL_OCEAN_ACCESS_TOKEN
 
